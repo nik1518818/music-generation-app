@@ -5,6 +5,19 @@ import CONFIG from './config.js';
 // Add this at the start of the file, after imports
 console.log('App.js loaded');
 
+// Add event listener for Get Started button
+document.addEventListener('DOMContentLoaded', () => {
+    const getStartedBtn = document.getElementById('getStartedBtn');
+    if (getStartedBtn) {
+        getStartedBtn.addEventListener('click', () => {
+            console.log('Get Started clicked');
+            openModal();
+        });
+    } else {
+        console.error('Get Started button not found');
+    }
+});
+
 // Questions array - now organized in groups
 const questionGroups = [
     {
