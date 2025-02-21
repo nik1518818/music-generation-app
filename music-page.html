@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generated Music</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .music-image {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            border-radius: 8px;
+            margin: 20px auto;
+            display: block;
+        }
+        .lyrics {
+            white-space: pre-wrap;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 1.1em;
+        }
+        .audio-player {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+            display: block;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .metadata {
+            color: #666;
+            font-size: 0.9em;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Your Generated Music</h1>
+        <div id="metadata" class="metadata">
+            <!-- Style and mood will be inserted here -->
+        </div>
+        <img id="musicImage" class="music-image" src="" alt="Music visualization">
+        <audio id="audioPlayer" class="audio-player" controls>
+            <source id="audioSource" src="" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+        <div id="lyrics" class="lyrics">
+            <!-- Lyrics will be inserted here -->
+        </div>
+    </div>
+    <script>
+        // Get URL parameters
+        const params = new URLSearchParams(window.location.search);
+        const imageUrl = params.get('image');
+        const audioUrl = params.get('audio');
+        const lyrics = params.get('lyrics');
+        const style = params.get('style');
+        const mood = params.get('mood');
+
+        // Set the image
+        if (imageUrl) {
+            document.getElementById('musicImage').src = decodeURIComponent(imageUrl);
+        }
+
+        // Set the audio source
+        if (audioUrl) {
+            document.getElementById('audioSource').src = decodeURIComponent(audioUrl);
+            document.getElementById('audioPlayer').load(); // Reload audio player
+        }
+
+        // Set the lyrics
+        if (lyrics) {
+            document.getElementById('lyrics').textContent = decodeURIComponent(lyrics);
+        }
+
+        // Set metadata
+        if (style && mood) {
+            document.getElementById('metadata').textContent = 
+                `Style: ${decodeURIComponent(style)} | Mood: ${decodeURIComponent(mood)}`;
+        }
+
+        // Auto-play the music if desired
+        document.getElementById('audioPlayer').play().catch(e => {
+            console.log('Auto-play prevented by browser. User must click play button.');
+        });
+    </script>
+</body>
+</html>

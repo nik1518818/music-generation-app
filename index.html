@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affirmation Anthem - Create Your Personalized Motivational Song</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">Affirmation Anthem</div>
+            <div class="nav-links">
+                <a href="#how-it-works">How It Works</a>
+                <a href="#about">About</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Create Your Personalized Motivational Anthem</h1>
+                <p class="tagline">Turn your story into a custom hype track—because you deserve an anthem!</p>
+                <button class="cta-button" id="getStartedBtn">Get Started</button>
+            </div>
+        </section>
+
+        <section class="how-it-works" id="how-it-works">
+            <h2>How It Works</h2>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-icon">🎤</div>
+                    <h3>Share Your Story</h3>
+                    <p>Answer a few quick questions about yourself</p>
+                </div>
+                <div class="step">
+                    <div class="step-icon">✍️</div>
+                    <h3>Generate Lyrics</h3>
+                    <p>We'll generate uplifting lyrics unique to you</p>
+                </div>
+                <div class="step">
+                    <div class="step-icon">🎵</div>
+                    <h3>Create Your Track</h3>
+                    <p>We'll create a custom track using Suno.ai</p>
+                </div>
+                <div class="step">
+                    <div class="step-icon">🎧</div>
+                    <h3>Listen & Share</h3>
+                    <p>Listen, share, or download your personal anthem!</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal for questionnaire -->
+    <div class="modal" id="questionnaireModal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <div class="questionnaire-container">
+                <div class="questionnaire-content">
+                    <!-- Content will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal payment-modal" id="paymentModal">
+        <div class="modal-content payment-content">
+            <span class="close-button">&times;</span>
+            <div class="payment-container">
+                <h2>🎵 Ready to Get Your Anthem?</h2>
+                <div class="pricing-box">
+                    <h3>Premium Anthem Package</h3>
+                    <div class="price">$4.99</div>
+                    <ul class="features">
+                        <li>✨ Custom Generated Lyrics</li>
+                        <li>🎵 Professional Quality Audio</li>
+                        <li>⬇️ Unlimited Downloads</li>
+                        <li>🎧 High Quality MP3 Format</li>
+                    </ul>
+                    <button class="payment-button" id="payNowBtn">Pay Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2024 Affirmation Anthem. All rights reserved.</p>
+    </footer>
+
+    <script src="app.js" type="module"></script>
+</body>
+</html>
