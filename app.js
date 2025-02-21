@@ -1,6 +1,6 @@
 // Add this import at the top of app.js
-import { generateLyrics, generateMusic } from './services/apiService.js';
-import CONFIG from './config.js';
+import { generateLyrics, generateMusic } from '/services/apiService.js';
+import CONFIG from '/config.js';
 
 // Add this at the start of the file, after imports
 console.log('App.js loaded');
