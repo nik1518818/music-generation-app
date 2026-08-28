@@ -21,6 +21,12 @@ window.MARKET_BRIEF = {
   ],
 
   events: [
+    // ---------- August 2026 ----------
+    { d: "2026-08-28", t: "10:00", cat: "fed", impact: "high", status: "confirmed",
+      title: "Jackson Hole keynote — Fed chair Kevin Warsh",
+      why: "The Kansas City Fed's symposium (27–29 August) is where chairs have historically signalled a shift in policy ahead of committing to it at a meeting. This is Warsh's first as chair, so the market has no read yet on how he phrases things — which makes the reaction bigger, not smaller.",
+      watch: "How he characterises the current stance and the direction of the next move. The stated 2026 theme — financial innovation and payments — matters far less than the policy language around it." },
+
     // ---------- September 2026 ----------
     { d: "2026-09-01", t: "10:00", cat: "growth", impact: "medium", status: "expected",
       title: "ISM Manufacturing PMI (August)",
@@ -48,8 +54,8 @@ window.MARKET_BRIEF = {
       watch: "The control group, which feeds straight into GDP." },
 
     { d: "2026-09-16", t: "14:00", cat: "fed", impact: "high", status: "confirmed",
-      title: "FOMC decision, dot plot and Powell press conference",
-      why: "Rate decision at 2:00, updated projections the same moment, Powell at 2:30. Quarterly meetings carry the dot plot, which is where the surprises usually are.",
+      title: "FOMC decision, dot plot and Warsh press conference",
+      why: "Rate decision at 2:00, updated projections the same moment, Warsh at 2:30. Quarterly meetings carry the dot plot, which is where the surprises usually are.",
       watch: "The 2:00–3:00 window often reverses. The dots and the press conference frequently say different things." },
 
     { d: "2026-09-18", t: "16:00", cat: "market", impact: "medium", status: "confirmed",
@@ -109,7 +115,7 @@ window.MARKET_BRIEF = {
       watch: "Azure and Google Cloud growth rates, and any change to capex plans." },
 
     { d: "2026-10-28", t: "14:00", cat: "fed", impact: "high", status: "confirmed",
-      title: "FOMC decision and Powell press conference",
+      title: "FOMC decision and Warsh press conference",
       why: "Rate decision with no updated projections, so everything hangs on the statement wording and the press conference.",
       watch: "Changes to the statement language versus September, word for word." },
 
@@ -191,7 +197,7 @@ window.MARKET_BRIEF = {
       watch: "This is the one that decides a December move if the committee is on the fence." },
 
     { d: "2026-12-09", t: "14:00", cat: "fed", impact: "high", status: "confirmed",
-      title: "FOMC decision, dot plot and Powell press conference",
+      title: "FOMC decision, dot plot and Warsh press conference",
       why: "Final meeting of 2026, with projections that lay out the committee's expected path for all of 2027.",
       watch: "The 2027 median dot. That number frames positioning into January." },
 
@@ -222,8 +228,13 @@ window.MARKET_BRIEF = {
 
     // ---------- 2027 ----------
     { d: "2027-01-27", t: "14:00", cat: "fed", impact: "high", status: "confirmed",
-      title: "FOMC decision and Powell press conference",
+      title: "FOMC decision and Warsh press conference",
       why: "First Fed meeting of 2027, setting the tone for the year.",
-      watch: "Any shift in how the committee frames the neutral rate." }
+      watch: "Any shift in how the committee frames the neutral rate." },
+
+    { d: "2027-02-24", t: "10:00", cat: "fed", impact: "high", status: "expected",
+      title: "Semiannual monetary policy testimony to Congress",
+      why: "The chair takes two days of questions from the House and Senate banking committees. Prepared remarks are policy; the answers under questioning are where the market gets something new. Held every February and July — the exact February dates are usually set only a few weeks ahead.",
+      watch: "Any daylight between the prepared testimony and the answers on the rate path." }
   ]
 };

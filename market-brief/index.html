@@ -166,6 +166,8 @@ h2{font-size:1.12rem; font-weight:700; letter-spacing:.02em; margin:0; text-tran
 }
 .ev--high{border-left-color:var(--accent)}
 .ev--medium{border-left-color:var(--rule)}
+.ev--done{opacity:.5}
+.ev--done h3{text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:var(--ink-3)}
 .ev-time{
   font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-2);
   letter-spacing:.03em; padding-top:3px; font-variant-numeric:tabular-nums;
@@ -305,6 +307,9 @@ footer b{color:var(--ink-2); font-weight:600}
     var h12 = h % 12 === 0 ? 12 : h % 12;
     return h12 + ":" + mins + " " + ap;
   }
+  function hasClock(t){
+    return !!t && (/^\d{2}:\d{2}$/.test(t) || t === "before open" || t === "after close");
+  }
   function sortKey(t){
     if(!t) return 1;
     var m = /^(\d{2}):(\d{2})$/.exec(t);
@@ -352,13 +357,14 @@ footer b{color:var(--ink-2); font-weight:600}
   /* ---- state ---- */
   var state = {cat:"all", highOnly:false, horizon:30};
 
-  function eventCard(ev, today){
+  function eventCard(ev, done){
     var chips = '<span class="chip chip--cat">' + esc(CATS[ev.cat] || ev.cat) + '</span>';
     if(ev.impact === "high") chips += '<span class="chip chip--high">High impact</span>';
     chips += '<span class="chip">' + (ev.status === "confirmed" ? "Confirmed" : "Expected") + '</span>';
+    if(done) chips += '<span class="chip">Already out</span>';
     var time = clock(ev.t) || (ev.t ? esc(ev.t) : "All day");
     return '' +
-      '<article class="ev ev--' + ev.impact + '">' +
+      '<article class="ev ev--' + ev.impact + (done ? " ev--done" : "") + '">' +
         '<div class="ev-time">' + esc(time) + '</div>' +
         '<div class="ev-body">' +
           '<h3>' + esc(ev.title) + '</h3>' +
@@ -388,8 +394,12 @@ footer b{color:var(--ink-2); font-weight:600}
         "Calendar updated " + u.d + " " + MON[u.m-1];
     }
 
-    /* next major catalyst: next high-impact event not already past */
-    var upcoming = events.filter(function(e){ return e.d >= now.date; });
+    /* Something that already happened this morning is not the next catalyst. */
+    function isPast(e){
+      if(e.d < now.date) return true;
+      return e.d === now.date && hasClock(e.t) && sortKey(e.t) <= now.minutes;
+    }
+    var upcoming = events.filter(function(e){ return e.d >= now.date && !isPast(e); });
     var next = upcoming.filter(function(e){ return e.impact === "high"; })[0] || upcoming[0];
     var nextEl = document.getElementById("nextUp");
     if(next){
@@ -425,7 +435,7 @@ footer b{color:var(--ink-2); font-weight:600}
     /* today */
     var todays = events.filter(function(e){ return e.d === now.date; });
     document.getElementById("today").innerHTML = todays.length
-      ? todays.map(function(e){ return eventCard(e, now.date); }).join("")
+      ? todays.map(function(e){ return eventCard(e, isPast(e)); }).join("")
       : '<p class="today-empty">Nothing scheduled. Barring news, expect a quiet session driven by positioning rather than data.</p>';
     document.getElementById("todayCount").textContent =
       todays.length ? todays.length + (todays.length === 1 ? " event" : " events") : "clear";
@@ -460,7 +470,7 @@ footer b{color:var(--ink-2); font-weight:600}
           '<div class="rail-month">' + MON[gp.m-1] + '</div>' +
           '<div class="rail-rel">' + relative(n) + '</div>' +
         '</div>' +
-        '<div class="day-events">' + g.items.map(function(e){ return eventCard(e, now.date); }).join("") + '</div>' +
+        '<div class="day-events">' + g.items.map(function(e){ return eventCard(e, false); }).join("") + '</div>' +
       '</div>';
     }).join("") : '<p class="empty">No events match these filters in this window.</p>';
 

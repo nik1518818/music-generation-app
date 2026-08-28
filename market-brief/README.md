@@ -34,7 +34,9 @@ time, so it stays correct wherever you open it:
 - **Market status** — open, closed, or the countdown to the opening bell,
   accounting for weekends, holidays and half sessions.
 - **Next major catalyst** — the next high-impact event, with a countdown.
-- **Today** — what lands during this session, in time order.
+- **Today** — what lands during this session, in time order. Anything whose
+  time has passed is struck through and marked "already out", and stops
+  counting as the next catalyst.
 - **Ahead** — the run sheet, filterable by category, impact and horizon.
 
 ## Keeping the calendar current
@@ -69,6 +71,11 @@ The current calendar runs to January 2027 and was built from:
 
 - **FOMC meetings and minutes** — the Federal Reserve's published schedule.
   Meeting dates through 2027 are already announced.
+- **Fed speaking events** — the Jackson Hole symposium (late August, hosted by
+  the Kansas City Fed) and the semiannual testimony to Congress (February and
+  July). These are not data releases, so they are easy to leave off a calendar
+  built from release schedules alone — and they move markets as hard as a
+  meeting does.
 - **CPI, PPI, jobs reports** — Bureau of Labor Statistics release schedule.
 - **PCE and GDP** — Bureau of Economic Analysis.
 - **Retail sales** — Census Bureau.
@@ -80,3 +87,6 @@ Agency dates are published a year or more ahead, so `confirmed` entries are
 stable. Earnings dates are typically only fixed two to three weeks out, which
 is why most carry `expected` until then — check the company's IR page before
 sizing a position around one.
+
+Kevin Warsh became Fed chair on 22 May 2026, succeeding Jerome Powell. The FOMC
+entries name the chair, so update them if that changes again.
