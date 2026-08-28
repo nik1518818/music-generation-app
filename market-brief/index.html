@@ -57,12 +57,13 @@ body{
 }
 .tape-date{color:var(--ink); font-weight:600}
 .tape-status{color:var(--ink-2); display:flex; align-items:center; gap:7px}
+.tape-today{color:var(--accent-ink); font-weight:600}
 .tape-meta{color:var(--ink-3); margin-left:auto; text-transform:none; letter-spacing:.02em}
 .dot{width:7px; height:7px; border-radius:50%; background:var(--ink-3); flex:none}
 .dot.is-open{background:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
 
 /* ---------- masthead ---------- */
-.masthead{padding:56px 0 36px; border-bottom:1px solid var(--rule)}
+.masthead{padding:44px 0 28px; border-bottom:1px solid var(--rule)}
 h1{
   font-size:clamp(2.4rem,6vw,3.6rem); line-height:1.02; margin:0 0 14px;
   font-weight:700; letter-spacing:-.028em; text-wrap:balance;
@@ -74,7 +75,7 @@ h1{
 
 /* ---------- next up ---------- */
 .next{
-  margin-top:36px; background:var(--surface); border:1px solid var(--rule);
+  margin-top:56px; background:var(--surface); border:1px solid var(--rule);
   border-radius:3px; box-shadow:var(--shadow); overflow:hidden;
   display:grid; grid-template-columns:minmax(0,1fr) auto;
 }
@@ -108,6 +109,13 @@ h1{
   display:flex; align-items:baseline; gap:14px; margin:56px 0 4px;
   padding-bottom:10px; border-bottom:2px solid var(--ink);
 }
+.sec-head--lead{margin-top:36px}
+.today-panel{
+  background:var(--surface); border:1px solid var(--rule); border-top:0;
+  border-radius:0 0 3px 3px; box-shadow:var(--shadow); padding:8px 26px 8px 10px;
+}
+.today-panel .ev{padding-top:18px; padding-bottom:18px}
+.today-panel .ev + .ev{border-top:1px solid var(--rule-soft)}
 h2{font-size:1.12rem; font-weight:700; letter-spacing:.02em; margin:0; text-transform:uppercase}
 .sec-count{
   font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-3);
@@ -117,7 +125,7 @@ h2{font-size:1.12rem; font-weight:700; letter-spacing:.02em; margin:0; text-tran
 /* ---------- today ---------- */
 .today-empty{
   font-family:Newsreader,Georgia,serif; font-size:1.1rem; color:var(--ink-2);
-  padding:22px 0; margin:0; border-bottom:1px solid var(--rule-soft);
+  padding:22px 16px; margin:0;
 }
 
 /* ---------- toolbar ---------- */
@@ -166,8 +174,7 @@ h2{font-size:1.12rem; font-weight:700; letter-spacing:.02em; margin:0; text-tran
 }
 .ev--high{border-left-color:var(--accent)}
 .ev--medium{border-left-color:var(--rule)}
-.ev--done{opacity:.5}
-.ev--done h3{text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:var(--ink-3)}
+.chip--out{color:var(--ground); background:var(--ink-2); border-color:transparent}
 .ev-time{
   font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-2);
   letter-spacing:.03em; padding-top:3px; font-variant-numeric:tabular-nums;
@@ -219,6 +226,7 @@ footer b{color:var(--ink-2); font-weight:600}
   <div class="tape-inner">
     <div class="tape-date" id="tapeDate">—</div>
     <div class="tape-status"><span class="dot" id="statusDot"></span><span id="tapeStatus">—</span></div>
+    <div class="tape-today" id="tapeToday"></div>
     <div class="tape-meta" id="tapeMeta"></div>
   </div>
 </div>
@@ -229,10 +237,10 @@ footer b{color:var(--ink-2); font-weight:600}
     <p class="standfirst">The scheduled events most likely to move US equities — Fed decisions, inflation prints, jobs reports and the earnings that carry an index. In order, with what to watch in each.</p>
   </header>
 
-  <section class="next" id="nextUp" aria-label="Next major catalyst"></section>
+  <div class="sec-head sec-head--lead"><h2>Today</h2><span class="sec-count" id="todayCount"></span></div>
+  <section class="today-panel" id="today"></section>
 
-  <div class="sec-head"><h2>Today</h2><span class="sec-count" id="todayCount"></span></div>
-  <section id="today"></section>
+  <section class="next" id="nextUp" aria-label="Next major catalyst"></section>
 
   <div class="sec-head"><h2>Ahead</h2><span class="sec-count" id="sheetCount"></span></div>
   <div class="toolbar" id="toolbar" role="group" aria-label="Filter events"></div>
@@ -361,7 +369,7 @@ footer b{color:var(--ink-2); font-weight:600}
     var chips = '<span class="chip chip--cat">' + esc(CATS[ev.cat] || ev.cat) + '</span>';
     if(ev.impact === "high") chips += '<span class="chip chip--high">High impact</span>';
     chips += '<span class="chip">' + (ev.status === "confirmed" ? "Confirmed" : "Expected") + '</span>';
-    if(done) chips += '<span class="chip">Already out</span>';
+    if(done) chips += '<span class="chip chip--out">Already out</span>';
     var time = clock(ev.t) || (ev.t ? esc(ev.t) : "All day");
     return '' +
       '<article class="ev ev--' + ev.impact + (done ? " ev--done" : "") + '">' +
@@ -439,6 +447,8 @@ footer b{color:var(--ink-2); font-weight:600}
       : '<p class="today-empty">Nothing scheduled. Barring news, expect a quiet session driven by positioning rather than data.</p>';
     document.getElementById("todayCount").textContent =
       todays.length ? todays.length + (todays.length === 1 ? " event" : " events") : "clear";
+    document.getElementById("tapeToday").textContent =
+      todays.length ? todays.length + (todays.length === 1 ? " event today" : " events today") : "";
 
     /* run sheet */
     var horizonEnd = state.horizon === 0 ? "9999-99-99" : (function(){
