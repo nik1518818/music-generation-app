@@ -34,7 +34,10 @@ time, so it stays correct wherever you open it:
 - **Market status** — open, closed, or the countdown to the opening bell,
   accounting for weekends, holidays and half sessions.
 - **Next major catalyst** — the next high-impact event, with a countdown.
-- **Today** — leads the page, at full strength, in time order. Anything whose
+- **Today** — leads the page, at full strength, in time order, opening with a
+  count of how many high- and medium-impact events are due. High-impact events
+  carry a filled badge and a heavier rule; the run sheet below stays quiet by
+  comparison, so the loud styling means something. Anything whose
   time has passed keeps its prominence and is badged "already out" — the
   market is still trading the reaction — but stops counting as the next
   catalyst.

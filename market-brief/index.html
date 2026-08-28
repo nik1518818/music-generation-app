@@ -175,6 +175,24 @@ h2{font-size:1.12rem; font-weight:700; letter-spacing:.02em; margin:0; text-tran
 .ev--high{border-left-color:var(--accent)}
 .ev--medium{border-left-color:var(--rule)}
 .chip--out{color:var(--ground); background:var(--ink-2); border-color:transparent}
+.chip--med{color:var(--ink-2); background:var(--surface-2); border-color:transparent}
+
+/* Today shouts; the run sheet below stays calm. */
+.ev--lead{border-left-width:4px; padding-left:18px}
+.ev--lead .chip--high{background:var(--accent); color:var(--ground); font-weight:600; letter-spacing:.12em}
+.ev--lead h3{font-size:1.16rem}
+.today-alert{
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  padding:14px 16px 14px 18px; margin-bottom:2px;
+  border-bottom:1px solid var(--rule-soft);
+  font-family:"IBM Plex Mono",monospace; font-size:11px;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3);
+}
+.today-alert .high{
+  color:var(--ground); background:var(--accent);
+  padding:4px 9px; border-radius:2px; font-weight:600;
+}
+.today-alert .med{color:var(--ink-2); font-weight:500}
 .ev-time{
   font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-2);
   letter-spacing:.03em; padding-top:3px; font-variant-numeric:tabular-nums;
@@ -365,14 +383,16 @@ footer b{color:var(--ink-2); font-weight:600}
   /* ---- state ---- */
   var state = {cat:"all", highOnly:false, horizon:30};
 
-  function eventCard(ev, done){
+  function eventCard(ev, done, lead){
     var chips = '<span class="chip chip--cat">' + esc(CATS[ev.cat] || ev.cat) + '</span>';
-    if(ev.impact === "high") chips += '<span class="chip chip--high">High impact</span>';
+    chips += ev.impact === "high"
+      ? '<span class="chip chip--high">High impact</span>'
+      : '<span class="chip chip--med">Medium impact</span>';
     chips += '<span class="chip">' + (ev.status === "confirmed" ? "Confirmed" : "Expected") + '</span>';
     if(done) chips += '<span class="chip chip--out">Already out</span>';
     var time = clock(ev.t) || (ev.t ? esc(ev.t) : "All day");
     return '' +
-      '<article class="ev ev--' + ev.impact + (done ? " ev--done" : "") + '">' +
+      '<article class="ev ev--' + ev.impact + (done ? " ev--done" : "") + (lead ? " ev--lead" : "") + '">' +
         '<div class="ev-time">' + esc(time) + '</div>' +
         '<div class="ev-body">' +
           '<h3>' + esc(ev.title) + '</h3>' +
@@ -442,13 +462,26 @@ footer b{color:var(--ink-2); font-weight:600}
 
     /* today */
     var todays = events.filter(function(e){ return e.d === now.date; });
+    var highToday = todays.filter(function(e){ return e.impact === "high"; }).length;
+    var medToday  = todays.length - highToday;
+
+    var alert = "";
+    if(todays.length){
+      var bits = [];
+      if(highToday) bits.push('<span class="high">' + highToday + ' high impact</span>');
+      if(medToday)  bits.push('<span class="med">' + medToday + ' medium</span>');
+      alert = '<div class="today-alert">' + bits.join('<span aria-hidden="true">·</span>') +
+        (highToday ? '<span>trade with care</span>' : '<span>no index-level risk scheduled</span>') +
+      '</div>';
+    }
     document.getElementById("today").innerHTML = todays.length
-      ? todays.map(function(e){ return eventCard(e, isPast(e)); }).join("")
+      ? alert + todays.map(function(e){ return eventCard(e, isPast(e), true); }).join("")
       : '<p class="today-empty">Nothing scheduled. Barring news, expect a quiet session driven by positioning rather than data.</p>';
     document.getElementById("todayCount").textContent =
       todays.length ? todays.length + (todays.length === 1 ? " event" : " events") : "clear";
-    document.getElementById("tapeToday").textContent =
-      todays.length ? todays.length + (todays.length === 1 ? " event today" : " events today") : "";
+    document.getElementById("tapeToday").textContent = highToday
+      ? highToday + (highToday === 1 ? " high-impact event today" : " high-impact events today")
+      : (todays.length ? todays.length + (todays.length === 1 ? " event today" : " events today") : "");
 
     /* run sheet */
     var horizonEnd = state.horizon === 0 ? "9999-99-99" : (function(){
