@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pre-Market Catalysts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap">
+<style>
+:root{
+  --ground:#F6F4EF; --surface:#FFFFFF; --surface-2:#EFECE3;
+  --ink:#16181F; --ink-2:#4C5160; --ink-3:#7C8293;
+  --rule:#DED9CD; --rule-soft:#EAE6DC;
+  --accent:#A2530B; --accent-ink:#7C3F08; --accent-soft:#F5E6D2;
+  --cool:#2E3C74; --cool-soft:#E3E6F3;
+  --shadow:0 1px 2px rgba(22,24,31,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0D0F16; --surface:#141821; --surface-2:#1B202B;
+    --ink:#E9E7E1; --ink-2:#A3A8B6; --ink-3:#6D7383;
+    --rule:#262C38; --rule-soft:#1E232E;
+    --accent:#EFA753; --accent-ink:#F6C489; --accent-soft:#33240F;
+    --cool:#93A4E4; --cool-soft:#1A2039;
+    --shadow:0 1px 2px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0D0F16; --surface:#141821; --surface-2:#1B202B;
+  --ink:#E9E7E1; --ink-2:#A3A8B6; --ink-3:#6D7383;
+  --rule:#262C38; --rule-soft:#1E232E;
+  --accent:#EFA753; --accent-ink:#F6C489; --accent-soft:#33240F;
+  --cool:#93A4E4; --cool-soft:#1A2039;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:Archivo,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:16px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1000px; margin:0 auto; padding:0 24px 96px}
+
+/* ---------- tape ---------- */
+.tape{
+  border-bottom:1px solid var(--rule); background:var(--surface);
+  position:sticky; top:0; z-index:20;
+}
+.tape-inner{
+  max-width:1000px; margin:0 auto; padding:10px 24px;
+  display:flex; flex-wrap:wrap; align-items:center; gap:8px 20px;
+  font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:12px; letter-spacing:.06em; text-transform:uppercase;
+}
+.tape-date{color:var(--ink); font-weight:600}
+.tape-status{color:var(--ink-2); display:flex; align-items:center; gap:7px}
+.tape-meta{color:var(--ink-3); margin-left:auto; text-transform:none; letter-spacing:.02em}
+.dot{width:7px; height:7px; border-radius:50%; background:var(--ink-3); flex:none}
+.dot.is-open{background:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
+
+/* ---------- masthead ---------- */
+.masthead{padding:56px 0 36px; border-bottom:1px solid var(--rule)}
+h1{
+  font-size:clamp(2.4rem,6vw,3.6rem); line-height:1.02; margin:0 0 14px;
+  font-weight:700; letter-spacing:-.028em; text-wrap:balance;
+}
+.standfirst{
+  font-family:Newsreader,Georgia,serif; font-size:1.18rem; line-height:1.55;
+  color:var(--ink-2); max-width:62ch; margin:0;
+}
+
+/* ---------- next up ---------- */
+.next{
+  margin-top:36px; background:var(--surface); border:1px solid var(--rule);
+  border-radius:3px; box-shadow:var(--shadow); overflow:hidden;
+  display:grid; grid-template-columns:minmax(0,1fr) auto;
+}
+.next-main{padding:26px 28px}
+.next-side{
+  padding:26px 28px; border-left:1px solid var(--rule); background:var(--surface-2);
+  display:flex; flex-direction:column; justify-content:center; align-items:flex-end;
+  text-align:right; min-width:170px;
+}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--accent-ink); margin-bottom:12px;
+}
+.next-title{font-size:1.6rem; font-weight:600; letter-spacing:-.02em; line-height:1.2; margin:0 0 10px; text-wrap:balance}
+.next-when{
+  font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--ink-2);
+  letter-spacing:.03em; margin-bottom:16px;
+}
+.next-why{font-family:Newsreader,Georgia,serif; font-size:1.05rem; line-height:1.55; color:var(--ink-2); margin:0; max-width:56ch}
+.count-num{
+  font-family:"IBM Plex Mono",monospace; font-size:2.6rem; font-weight:600;
+  line-height:1; letter-spacing:-.03em; font-variant-numeric:tabular-nums; color:var(--ink);
+}
+.count-label{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--ink-3); margin-top:8px;
+}
+
+/* ---------- section headings ---------- */
+.sec-head{
+  display:flex; align-items:baseline; gap:14px; margin:56px 0 4px;
+  padding-bottom:10px; border-bottom:2px solid var(--ink);
+}
+h2{font-size:1.12rem; font-weight:700; letter-spacing:.02em; margin:0; text-transform:uppercase}
+.sec-count{
+  font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-3);
+  margin-left:auto; font-variant-numeric:tabular-nums;
+}
+
+/* ---------- today ---------- */
+.today-empty{
+  font-family:Newsreader,Georgia,serif; font-size:1.1rem; color:var(--ink-2);
+  padding:22px 0; margin:0; border-bottom:1px solid var(--rule-soft);
+}
+
+/* ---------- toolbar ---------- */
+.toolbar{
+  display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+  padding:18px 0 6px;
+}
+.filter{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:500;
+  letter-spacing:.08em; text-transform:uppercase;
+  padding:6px 11px; border:1px solid var(--rule); border-radius:2px;
+  background:transparent; color:var(--ink-2); cursor:pointer;
+  transition:background .12s,color .12s,border-color .12s;
+}
+.filter:hover{border-color:var(--ink-3); color:var(--ink)}
+.filter:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.filter[aria-pressed="true"]{background:var(--ink); border-color:var(--ink); color:var(--ground)}
+.filter-sep{width:1px; height:22px; background:var(--rule); margin:0 6px}
+.filter-group{display:flex; flex-wrap:nowrap; gap:8px}
+
+/* ---------- run sheet ---------- */
+.day{display:grid; grid-template-columns:132px minmax(0,1fr); border-bottom:1px solid var(--rule-soft)}
+.day:last-child{border-bottom:0}
+.day-rail{padding:22px 20px 22px 0; position:relative}
+.rail-day{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--ink-3);
+}
+.rail-date{
+  font-size:1.5rem; font-weight:600; letter-spacing:-.02em; line-height:1.1;
+  font-variant-numeric:tabular-nums;
+}
+.rail-month{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--ink-3); margin-top:2px;
+}
+.rail-rel{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--accent-ink);
+  margin-top:8px; letter-spacing:.04em;
+}
+.day-events{padding:14px 0}
+
+.ev{
+  display:grid; grid-template-columns:96px minmax(0,1fr); gap:0 18px;
+  padding:14px 0 14px 16px; border-left:2px solid transparent;
+}
+.ev--high{border-left-color:var(--accent)}
+.ev--medium{border-left-color:var(--rule)}
+.ev-time{
+  font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-2);
+  letter-spacing:.03em; padding-top:3px; font-variant-numeric:tabular-nums;
+}
+h3{font-size:1.06rem; font-weight:600; letter-spacing:-.012em; margin:0 0 8px; line-height:1.3; text-wrap:balance}
+.chips{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px}
+.chip{
+  font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:500;
+  letter-spacing:.1em; text-transform:uppercase;
+  padding:3px 7px; border-radius:2px; border:1px solid var(--rule); color:var(--ink-3);
+}
+.chip--cat{color:var(--cool); background:var(--cool-soft); border-color:transparent}
+.chip--high{color:var(--accent-ink); background:var(--accent-soft); border-color:transparent}
+.why{font-family:Newsreader,Georgia,serif; font-size:1.03rem; line-height:1.55; color:var(--ink-2); margin:0 0 8px; max-width:64ch}
+.watch{font-size:.86rem; line-height:1.5; color:var(--ink-3); margin:0; max-width:64ch}
+.watch b{
+  font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); margin-right:8px;
+}
+.empty{font-family:Newsreader,Georgia,serif; font-size:1.05rem; color:var(--ink-2); padding:28px 0}
+
+/* ---------- footer ---------- */
+footer{margin-top:64px; padding-top:24px; border-top:1px solid var(--rule); color:var(--ink-3); font-size:.85rem; line-height:1.65}
+footer p{margin:0 0 10px; max-width:70ch}
+footer b{color:var(--ink-2); font-weight:600}
+
+@media (max-width:720px){
+  .next{grid-template-columns:1fr}
+  .next-side{border-left:0; border-top:1px solid var(--rule); align-items:flex-start; text-align:left; flex-direction:row; gap:14px; align-items:baseline; padding:18px 24px}
+  .count-label{margin-top:0}
+  .day{grid-template-columns:1fr}
+  .day-rail{padding:20px 0 0; display:flex; align-items:baseline; gap:10px}
+  .rail-date{font-size:1.15rem}
+  .rail-rel{margin-top:0}
+  .ev{grid-template-columns:1fr; gap:6px}
+  .ev-time{padding-top:0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none !important; animation:none !important}}
+@media print{
+  .tape,.toolbar{display:none}
+  body{background:#fff; color:#000}
+  .next,.day{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<div class="tape">
+  <div class="tape-inner">
+    <div class="tape-date" id="tapeDate">—</div>
+    <div class="tape-status"><span class="dot" id="statusDot"></span><span id="tapeStatus">—</span></div>
+    <div class="tape-meta" id="tapeMeta"></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <header class="masthead">
+    <h1>Pre-Market Catalysts</h1>
+    <p class="standfirst">The scheduled events most likely to move US equities — Fed decisions, inflation prints, jobs reports and the earnings that carry an index. In order, with what to watch in each.</p>
+  </header>
+
+  <section class="next" id="nextUp" aria-label="Next major catalyst"></section>
+
+  <div class="sec-head"><h2>Today</h2><span class="sec-count" id="todayCount"></span></div>
+  <section id="today"></section>
+
+  <div class="sec-head"><h2>Ahead</h2><span class="sec-count" id="sheetCount"></span></div>
+  <div class="toolbar" id="toolbar" role="group" aria-label="Filter events"></div>
+  <section class="sheet" id="sheet"></section>
+
+  <footer>
+    <p><b>Confirmed</b> dates are published by the issuing agency or exchange — the Fed, the Bureau of Labor Statistics, the Bureau of Economic Analysis, the NYSE. <b>Expected</b> dates follow the normal release pattern but are not locked in; company earnings dates in particular are usually confirmed only two to three weeks ahead. Verify anything you are sizing a position against.</p>
+    <p>All times US Eastern. This is a schedule of what is coming, not investment advice — it tells you when the market is likely to move, not which way.</p>
+  </footer>
+</div>
+
+<script src="./data.js"></script>
+<script>
+(function(){
+  "use strict";
+  var TZ = "America/New_York";
+  var DATA = window.MARKET_BRIEF || {events:[], holidays:[]};
+
+  var CATS = {
+    fed:      "Fed",
+    inflation:"Inflation",
+    jobs:     "Jobs",
+    earnings: "Earnings",
+    growth:   "Growth",
+    policy:   "Politics",
+    market:   "Market structure"
+  };
+
+  /* ---- time zone helpers ---- */
+  function tzOffset(ts){
+    var dtf = new Intl.DateTimeFormat("en-US",{timeZone:TZ,hour12:false,
+      year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"});
+    var p = {};
+    dtf.formatToParts(new Date(ts)).forEach(function(x){ p[x.type] = x.value; });
+    var asUTC = Date.UTC(+p.year, +p.month-1, +p.day, (+p.hour)%24, +p.minute, +p.second);
+    return asUTC - ts;
+  }
+  /* Wall-clock time in New York -> real UTC timestamp. */
+  function etToTs(dateStr, hh, mm){
+    var a = dateStr.split("-");
+    var guess = Date.UTC(+a[0], +a[1]-1, +a[2], hh||0, mm||0);
+    var ts = guess - tzOffset(guess);
+    return guess - tzOffset(ts);      // second pass settles DST boundaries
+  }
+  function nowParts(){
+    var d = new Date(), off = tzOffset(d.getTime());
+    var shifted = new Date(d.getTime() + off);
+    return {
+      ts: d.getTime(),
+      date: shifted.toISOString().slice(0,10),
+      dow: shifted.getUTCDay(),
+      minutes: shifted.getUTCHours()*60 + shifted.getUTCMinutes()
+    };
+  }
+  function daysBetween(fromDate, toDate){
+    return Math.round((Date.UTC.apply(null, toDate.split("-").map(Number).map(function(n,i){return i===1?n-1:n;}))
+                     - Date.UTC.apply(null, fromDate.split("-").map(Number).map(function(n,i){return i===1?n-1:n;})))/86400000);
+  }
+
+  /* ---- formatting ---- */
+  var DOW  = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  var MON  = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  function parts(dateStr){
+    var a = dateStr.split("-").map(Number);
+    return {y:a[0], m:a[1], d:a[2], dow:new Date(Date.UTC(a[0],a[1]-1,a[2])).getUTCDay()};
+  }
+  function clock(t){
+    if(!t) return "";
+    var m = /^(\d{2}):(\d{2})$/.exec(t);
+    if(!m) return t;
+    var h = +m[1], mins = m[2], ap = h >= 12 ? "pm" : "am";
+    var h12 = h % 12 === 0 ? 12 : h % 12;
+    return h12 + ":" + mins + " " + ap;
+  }
+  function sortKey(t){
+    if(!t) return 1;
+    var m = /^(\d{2}):(\d{2})$/.exec(t);
+    if(m) return +m[1]*60 + +m[2];
+    if(t === "all day")      return 0;
+    if(t === "before open")  return 8*60;
+    if(t === "after close")  return 16*60 + 30;
+    return 12*60;
+  }
+  function relative(n){
+    if(n === 0) return "Today";
+    if(n === 1) return "Tomorrow";
+    if(n < 7)   return "In " + n + " days";
+    if(n < 14)  return "Next week";
+    return "In " + Math.round(n/7) + " weeks";
+  }
+  function esc(s){
+    return String(s).replace(/[&<>"]/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];
+    });
+  }
+
+  /* ---- market session ---- */
+  function marketStatus(now){
+    var hol = null;
+    (DATA.holidays||[]).forEach(function(h){ if(h.d === now.date) hol = h; });
+    if(now.dow === 0 || now.dow === 6)
+      return {open:false, text:"Markets closed · weekend"};
+    if(hol && hol.close === null)
+      return {open:false, text:"Markets closed · " + hol.name};
+
+    var open = 9*60 + 30;
+    var close = hol && hol.close ? hol.close : 16*60;
+    if(now.minutes < open){
+      var mins = open - now.minutes;
+      return {open:false, text:"Opens in " + Math.floor(mins/60) + "h " + (mins%60) + "m"};
+    }
+    if(now.minutes < close){
+      var left = close - now.minutes;
+      return {open:true, text:"Market open · closes in " + Math.floor(left/60) + "h " + (left%60) + "m"};
+    }
+    return {open:false, text:"Markets closed for the day"};
+  }
+
+  /* ---- state ---- */
+  var state = {cat:"all", highOnly:false, horizon:30};
+
+  function eventCard(ev, today){
+    var chips = '<span class="chip chip--cat">' + esc(CATS[ev.cat] || ev.cat) + '</span>';
+    if(ev.impact === "high") chips += '<span class="chip chip--high">High impact</span>';
+    chips += '<span class="chip">' + (ev.status === "confirmed" ? "Confirmed" : "Expected") + '</span>';
+    var time = clock(ev.t) || (ev.t ? esc(ev.t) : "All day");
+    return '' +
+      '<article class="ev ev--' + ev.impact + '">' +
+        '<div class="ev-time">' + esc(time) + '</div>' +
+        '<div class="ev-body">' +
+          '<h3>' + esc(ev.title) + '</h3>' +
+          '<div class="chips">' + chips + '</div>' +
+          '<p class="why">' + esc(ev.why) + '</p>' +
+          '<p class="watch"><b>Watch</b>' + esc(ev.watch) + '</p>' +
+        '</div>' +
+      '</article>';
+  }
+
+  function render(){
+    var now = nowParts();
+    var events = (DATA.events || []).slice().sort(function(a,b){
+      return a.d === b.d ? sortKey(a.t) - sortKey(b.t) : (a.d < b.d ? -1 : 1);
+    });
+
+    /* tape */
+    var p = parts(now.date);
+    document.getElementById("tapeDate").textContent =
+      DOW[p.dow] + " " + p.d + " " + MON[p.m-1] + " " + p.y;
+    var st = marketStatus(now);
+    document.getElementById("tapeStatus").textContent = st.text;
+    document.getElementById("statusDot").className = "dot" + (st.open ? " is-open" : "");
+    if(DATA.updated){
+      var u = parts(DATA.updated);
+      document.getElementById("tapeMeta").textContent =
+        "Calendar updated " + u.d + " " + MON[u.m-1];
+    }
+
+    /* next major catalyst: next high-impact event not already past */
+    var upcoming = events.filter(function(e){ return e.d >= now.date; });
+    var next = upcoming.filter(function(e){ return e.impact === "high"; })[0] || upcoming[0];
+    var nextEl = document.getElementById("nextUp");
+    if(next){
+      var n = daysBetween(now.date, next.d);
+      var np = parts(next.d);
+      var when = DOW[np.dow] + " " + np.d + " " + MON[np.m-1];
+      var tm = clock(next.t) || next.t;
+      if(tm) when += " · " + tm + (/^\d/.test(tm) ? " ET" : "");
+      var num, label;
+      if(n === 0){
+        var mins = sortKey(next.t) - now.minutes;
+        if(mins > 0){ num = Math.floor(mins/60) + "h " + (mins%60) + "m"; label = "from now"; }
+        else { num = "Now"; label = "today"; }
+      } else {
+        num = n; label = n === 1 ? "day away" : "days away";
+      }
+      nextEl.innerHTML =
+        '<div class="next-main">' +
+          '<div class="eyebrow">Next major catalyst</div>' +
+          '<div class="next-title">' + esc(next.title) + '</div>' +
+          '<div class="next-when">' + esc(when) + '</div>' +
+          '<p class="next-why">' + esc(next.why) + '</p>' +
+        '</div>' +
+        '<div class="next-side">' +
+          '<div class="count-num">' + esc(String(num)) + '</div>' +
+          '<div class="count-label">' + esc(label) + '</div>' +
+        '</div>';
+    } else {
+      nextEl.innerHTML = '<div class="next-main"><div class="eyebrow">Next major catalyst</div>' +
+        '<p class="next-why">Nothing left on the calendar. Add events in <code>data.js</code>.</p></div>';
+    }
+
+    /* today */
+    var todays = events.filter(function(e){ return e.d === now.date; });
+    document.getElementById("today").innerHTML = todays.length
+      ? todays.map(function(e){ return eventCard(e, now.date); }).join("")
+      : '<p class="today-empty">Nothing scheduled. Barring news, expect a quiet session driven by positioning rather than data.</p>';
+    document.getElementById("todayCount").textContent =
+      todays.length ? todays.length + (todays.length === 1 ? " event" : " events") : "clear";
+
+    /* run sheet */
+    var horizonEnd = state.horizon === 0 ? "9999-99-99" : (function(){
+      var base = new Date(Date.UTC.apply(null, now.date.split("-").map(Number).map(function(n,i){return i===1?n-1:n;})));
+      base.setUTCDate(base.getUTCDate() + state.horizon);
+      return base.toISOString().slice(0,10);
+    })();
+
+    var shown = events.filter(function(e){
+      if(e.d <= now.date) return false;
+      if(e.d > horizonEnd) return false;
+      if(state.highOnly && e.impact !== "high") return false;
+      if(state.cat !== "all" && e.cat !== state.cat) return false;
+      return true;
+    });
+
+    var byDay = [], index = {};
+    shown.forEach(function(e){
+      if(!index[e.d]){ index[e.d] = {d:e.d, items:[]}; byDay.push(index[e.d]); }
+      index[e.d].items.push(e);
+    });
+
+    document.getElementById("sheet").innerHTML = byDay.length ? byDay.map(function(g){
+      var gp = parts(g.d), n = daysBetween(now.date, g.d);
+      return '<div class="day">' +
+        '<div class="day-rail">' +
+          '<div class="rail-day">' + DOW[gp.dow] + '</div>' +
+          '<div class="rail-date">' + gp.d + '</div>' +
+          '<div class="rail-month">' + MON[gp.m-1] + '</div>' +
+          '<div class="rail-rel">' + relative(n) + '</div>' +
+        '</div>' +
+        '<div class="day-events">' + g.items.map(function(e){ return eventCard(e, now.date); }).join("") + '</div>' +
+      '</div>';
+    }).join("") : '<p class="empty">No events match these filters in this window.</p>';
+
+    document.getElementById("sheetCount").textContent =
+      shown.length + (shown.length === 1 ? " event" : " events");
+  }
+
+  /* ---- toolbar ---- */
+  function buildToolbar(){
+    var bar = document.getElementById("toolbar");
+    var used = {};
+    (DATA.events||[]).forEach(function(e){ used[e.cat] = true; });
+
+    var html = '<button class="filter" data-kind="cat" data-value="all">All</button>';
+    Object.keys(CATS).forEach(function(k){
+      if(used[k]) html += '<button class="filter" data-kind="cat" data-value="' + k + '">' + CATS[k] + '</button>';
+    });
+    html += '<span class="filter-sep" aria-hidden="true"></span>' +
+      '<button class="filter" data-kind="high" data-value="1">High impact only</button>' +
+      '<span class="filter-sep" aria-hidden="true"></span>' +
+      '<span class="filter-group">' +
+        '<button class="filter" data-kind="horizon" data-value="7">7 days</button>' +
+        '<button class="filter" data-kind="horizon" data-value="30">30 days</button>' +
+        '<button class="filter" data-kind="horizon" data-value="0">Everything</button>' +
+      '</span>';
+    bar.innerHTML = html;
+
+    bar.addEventListener("click", function(ev){
+      var btn = ev.target.closest(".filter");
+      if(!btn) return;
+      var kind = btn.dataset.kind;
+      if(kind === "cat")     state.cat = btn.dataset.value;
+      if(kind === "high")    state.highOnly = !state.highOnly;
+      if(kind === "horizon") state.horizon = +btn.dataset.value;
+      syncToolbar();
+      render();
+    });
+    syncToolbar();
+  }
+  function syncToolbar(){
+    document.querySelectorAll("#toolbar .filter").forEach(function(btn){
+      var kind = btn.dataset.kind, on = false;
+      if(kind === "cat")     on = state.cat === btn.dataset.value;
+      if(kind === "high")    on = state.highOnly;
+      if(kind === "horizon") on = state.horizon === +btn.dataset.value;
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+  }
+
+  buildToolbar();
+  render();
+  setInterval(render, 60000);   /* keeps the clock, countdown and "today" honest */
+})();
+</script>
+</body>
+</html>
