@@ -20,6 +20,90 @@ window.MARKET_BRIEF = {
     { d: "2027-01-18", name: "Martin Luther King Jr. Day", close: null }
   ],
 
+  /**
+   * Who reports, and when. bmo = before the open, amc = after the close.
+   * Companies confirm dates only two to three weeks ahead, so most of these
+   * sit at status "expected" until they are announced.
+   */
+  earnings: [
+    // ---- off-cycle reporters, September ----
+    { d: "2026-09-10", when: "amc", ticker: "ORCL", name: "Oracle", impact: "high", status: "expected",
+      note: "First big AI-infrastructure read of the quarter. The cloud backlog number has moved the whole data-centre complex.",
+      watch: "Remaining performance obligations, and cloud infrastructure revenue growth." },
+    { d: "2026-09-10", when: "amc", ticker: "ADBE", name: "Adobe", impact: "medium", status: "expected",
+      note: "A proxy for whether software companies can charge for AI features.",
+      watch: "Net new digital media ARR." },
+    { d: "2026-09-17", when: "amc", ticker: "FDX", name: "FedEx", impact: "medium", status: "expected",
+      note: "Ships for everyone, so it reads as a freight-volume proxy for the wider economy.",
+      watch: "Full-year guidance, and volumes by segment." },
+    { d: "2026-09-23", when: "amc", ticker: "MU", name: "Micron", impact: "high", status: "expected",
+      note: "Memory pricing is the cleanest available signal on AI data-centre build-out.",
+      watch: "High-bandwidth memory demand and pricing commentary." },
+    { d: "2026-09-24", when: "amc", ticker: "COST", name: "Costco", impact: "medium", status: "expected",
+      note: "A read on the higher-income consumer heading into the holiday quarter.",
+      watch: "Comparable sales excluding fuel, and membership renewal rates." },
+    { d: "2026-09-29", when: "amc", ticker: "NKE", name: "Nike", impact: "medium", status: "expected",
+      note: "Discretionary spending and China demand in one report.",
+      watch: "Greater China revenue and inventory levels." },
+
+    // ---- Q3 season opens: the banks ----
+    { d: "2026-10-13", when: "bmo", ticker: "JPM", name: "JPMorgan Chase", impact: "high", status: "expected",
+      note: "Opens Q3 earnings season and sets the tone for it. The best read on credit conditions anyone gets.",
+      watch: "Loan loss provisions and net interest income guidance." },
+    { d: "2026-10-13", when: "bmo", ticker: "GS", name: "Goldman Sachs", impact: "medium", status: "expected",
+      note: "Investment banking and trading revenue show whether deal-making has thawed.",
+      watch: "Advisory backlog." },
+    { d: "2026-10-13", when: "bmo", ticker: "WFC", name: "Wells Fargo", impact: "medium", status: "expected",
+      note: "The most consumer-weighted of the big banks.",
+      watch: "Card delinquency rates." },
+    { d: "2026-10-13", when: "bmo", ticker: "C", name: "Citigroup", impact: "medium", status: "expected",
+      note: "Global exposure makes it the read on international credit.",
+      watch: "Expense guidance and the restructuring progress." },
+    { d: "2026-10-14", when: "bmo", ticker: "BAC", name: "Bank of America", impact: "medium", status: "expected",
+      note: "Largest US deposit base, so it is the clearest look at the mass-market consumer.",
+      watch: "Deposit costs and net interest margin." },
+    { d: "2026-10-14", when: "bmo", ticker: "MS", name: "Morgan Stanley", impact: "medium", status: "expected",
+      note: "Wealth management flows show where retail money is going.",
+      watch: "Net new assets." },
+    { d: "2026-10-15", when: "bmo", ticker: "TSM", name: "TSMC", impact: "high", status: "expected",
+      note: "Manufactures nearly every leading-edge AI chip. Its capex plan is the industry's forward guidance.",
+      watch: "Capex for the year ahead, and advanced-node revenue mix." },
+    { d: "2026-10-20", when: "amc", ticker: "NFLX", name: "Netflix", impact: "medium", status: "expected",
+      note: "First mega-cap tech name out, and a proxy for streaming and ad spend.",
+      watch: "Ad-tier momentum and operating margin guidance." },
+
+    // ---- the heavy week ----
+    { d: "2026-10-27", when: "amc", ticker: "MSFT", name: "Microsoft", impact: "high", status: "expected",
+      note: "One of the largest index weights. Azure growth and capex guidance move the entire tech complex.",
+      watch: "Azure growth rate, and any change to the capex plan." },
+    { d: "2026-10-27", when: "amc", ticker: "GOOGL", name: "Alphabet", impact: "high", status: "expected",
+      note: "Search revenue answers whether AI assistants are eating traditional search.",
+      watch: "Search revenue growth and Google Cloud margin." },
+    { d: "2026-10-28", when: "amc", ticker: "META", name: "Meta", impact: "high", status: "expected",
+      note: "High-beta name that routinely moves 5–10% overnight on the spending outlook.",
+      watch: "Capex guidance — the line that has caused the last several large moves." },
+    { d: "2026-10-28", when: "amc", ticker: "TSLA", name: "Tesla", impact: "high", status: "expected",
+      note: "Trades on margins and the story, rarely on the earnings number itself.",
+      watch: "Automotive gross margin excluding credits, and delivery guidance." },
+    { d: "2026-10-29", when: "amc", ticker: "AAPL", name: "Apple", impact: "high", status: "expected",
+      note: "Largest index weight, reporting into the holiday quarter.",
+      watch: "December-quarter revenue guidance and iPhone unit commentary." },
+    { d: "2026-10-29", when: "amc", ticker: "AMZN", name: "Amazon", impact: "high", status: "expected",
+      note: "AWS growth plus the consumer, in one report.",
+      watch: "AWS growth rate and Q4 operating income guidance." },
+
+    // ---- November and December ----
+    { d: "2026-11-17", when: "bmo", ticker: "WMT", name: "Walmart", impact: "medium", status: "expected",
+      note: "The broadest read on the American consumer, right before the holidays.",
+      watch: "Comparable sales, and management's language on trade-down behaviour." },
+    { d: "2026-11-25", when: "amc", ticker: "NVDA", name: "Nvidia", impact: "high", status: "expected",
+      note: "The most consequential single earnings report in the market. Sets direction for the whole AI and semiconductor complex, and often the index with it.",
+      watch: "Data centre revenue and next-quarter guidance. Options typically price a 7–9% move." },
+    { d: "2026-12-10", when: "amc", ticker: "AVGO", name: "Broadcom", impact: "high", status: "expected",
+      note: "Custom AI accelerators and networking — the clearest read on demand outside Nvidia.",
+      watch: "AI revenue guidance for the coming year." }
+  ],
+
   events: [
     // ---------- August 2026 ----------
     { d: "2026-08-28", t: "10:00", cat: "fed", impact: "high", status: "confirmed",
@@ -94,45 +178,20 @@ window.MARKET_BRIEF = {
       why: "Sets expectations for the October Fed meeting two weeks later.",
       watch: "Core month over month. Three consecutive soft prints is what changes the rate path." },
 
-    { d: "2026-10-13", t: "before open", cat: "earnings", impact: "high", status: "expected",
-      title: "Big banks open Q3 earnings season",
-      why: "JPMorgan, Goldman Sachs, Wells Fargo and Citi report first and set the tone for the whole season.",
-      watch: "Loan loss provisions and net interest income — the cleanest read on credit conditions available." },
-
     { d: "2026-10-15", t: "08:30", cat: "growth", impact: "medium", status: "expected",
       title: "Retail sales (September)",
       why: "Consumer health going into the holiday quarter.",
       watch: "Any pullback in discretionary categories." },
-
-    { d: "2026-10-20", t: "after close", cat: "earnings", impact: "medium", status: "expected",
-      title: "Netflix Q3 results",
-      why: "First mega-cap tech name out, and a proxy for streaming and ad spend.",
-      watch: "Ad-tier momentum and margin guidance." },
-
-    { d: "2026-10-27", t: "after close", cat: "earnings", impact: "high", status: "expected",
-      title: "Microsoft and Alphabet Q3 results",
-      why: "Two of the largest index weights on the same evening. Cloud and AI capex guidance moves the entire tech complex.",
-      watch: "Azure and Google Cloud growth rates, and any change to capex plans." },
 
     { d: "2026-10-28", t: "14:00", cat: "fed", impact: "high", status: "confirmed",
       title: "FOMC decision and Warsh press conference",
       why: "Rate decision with no updated projections, so everything hangs on the statement wording and the press conference.",
       watch: "Changes to the statement language versus September, word for word." },
 
-    { d: "2026-10-28", t: "after close", cat: "earnings", impact: "high", status: "expected",
-      title: "Meta and Tesla Q3 results",
-      why: "Both are high-beta names that routinely move 5–10% overnight on guidance.",
-      watch: "Meta's capex line and Tesla's margin per vehicle." },
-
     { d: "2026-10-29", t: "08:30", cat: "growth", impact: "medium", status: "expected",
       title: "Q3 GDP, advance estimate",
       why: "First official read on how the economy did last quarter.",
       watch: "Consumer spending contribution versus inventories — inventory-driven beats do not last." },
-
-    { d: "2026-10-29", t: "after close", cat: "earnings", impact: "high", status: "expected",
-      title: "Apple and Amazon Q3 results",
-      why: "The two largest consumer-facing mega-caps close out the busiest week of the season.",
-      watch: "Apple's holiday-quarter guidance and AWS growth." },
 
     { d: "2026-10-30", t: "08:30", cat: "inflation", impact: "high", status: "expected",
       title: "PCE price index (September)",
@@ -160,11 +219,6 @@ window.MARKET_BRIEF = {
       why: "One of two inflation prints before the December meeting, where a fresh dot plot is due.",
       watch: "Core services excluding housing — the measure the Fed keeps pointing at." },
 
-    { d: "2026-11-17", t: "before open", cat: "earnings", impact: "medium", status: "expected",
-      title: "Walmart Q3 results",
-      why: "The broadest available read on the American consumer, right before the holiday season.",
-      watch: "Comparable sales and what management says about trade-down behaviour." },
-
     { d: "2026-11-18", t: "14:00", cat: "fed", impact: "medium", status: "expected",
       title: "FOMC minutes (October meeting)",
       why: "Detail behind an October decision that came without projections.",
@@ -174,11 +228,6 @@ window.MARKET_BRIEF = {
       title: "PCE price index (October)",
       why: "Pulled forward into the short Thanksgiving week, so it lands in thin liquidity — moves get amplified.",
       watch: "Core PCE month over month." },
-
-    { d: "2026-11-25", t: "after close", cat: "earnings", impact: "high", status: "expected",
-      title: "Nvidia Q3 FY27 results",
-      why: "The most consequential single earnings report in the market. Sets the direction for the entire AI and semiconductor complex, and often the index with it.",
-      watch: "Data centre revenue and next-quarter guidance. The options market typically prices a 7–9% move." },
 
     { d: "2026-11-26", t: null, cat: "market", impact: "medium", status: "confirmed",
       title: "Thanksgiving — US markets closed",

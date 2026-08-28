@@ -104,6 +104,54 @@ h1{
   text-transform:uppercase; color:var(--ink-3); margin-top:8px;
 }
 
+/* ---------- earnings ---------- */
+.earn-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px}
+.earn-col{
+  background:var(--surface); border:1px solid var(--rule); border-radius:3px;
+  box-shadow:var(--shadow); overflow:hidden; align-self:start;
+}
+.earn-head{
+  display:flex; align-items:baseline; gap:10px; padding:12px 16px;
+  border-bottom:1px solid var(--rule); background:var(--surface-2);
+  font-family:"IBM Plex Mono",monospace; font-size:11px;
+  letter-spacing:.12em; text-transform:uppercase;
+}
+.earn-head .lbl{font-weight:600; color:var(--ink)}
+.earn-head .dt{color:var(--ink-3)}
+.earn-head .n{margin-left:auto; color:var(--ink-3)}
+.earn-row{padding:14px 16px 15px; border-top:1px solid var(--rule-soft); border-left:3px solid transparent}
+.earn-row:first-of-type{border-top:0}
+.earn-row.is-high{border-left-color:var(--accent)}
+.earn-id{display:flex; align-items:baseline; gap:9px; flex-wrap:wrap; margin-bottom:3px}
+.ticker{
+  font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:1.02rem;
+  letter-spacing:.04em; color:var(--ink);
+}
+.earn-name{font-size:.95rem; font-weight:500; color:var(--ink-2)}
+.earn-when{
+  font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink-3); margin-left:auto;
+}
+.earn-row.is-high .earn-when{color:var(--accent-ink); font-weight:600}
+.earn-note{font-family:Newsreader,Georgia,serif; font-size:.99rem; line-height:1.5; color:var(--ink-2); margin:7px 0 6px}
+.earn-watch{font-size:.82rem; line-height:1.5; color:var(--ink-3); margin:0}
+.earn-watch b{
+  font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600;
+  letter-spacing:.12em; text-transform:uppercase; margin-right:7px;
+}
+.earn-empty{padding:20px 16px; margin:0; font-family:Newsreader,Georgia,serif; color:var(--ink-3)}
+.earn-none{
+  background:var(--surface); border:1px solid var(--rule); border-radius:3px;
+  box-shadow:var(--shadow); padding:20px 22px;
+}
+.earn-none .lead{font-family:Newsreader,Georgia,serif; font-size:1.05rem; color:var(--ink-2); margin:0 0 10px}
+.earn-none .roster{display:flex; flex-wrap:wrap; gap:6px 18px; align-items:baseline}
+.earn-none .who{display:inline-flex; gap:7px; align-items:baseline}
+.earn-none .when{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink-3); margin-left:4px;
+}
+
 /* ---------- section headings ---------- */
 .sec-head{
   display:flex; align-items:baseline; gap:14px; margin:56px 0 4px;
@@ -220,6 +268,7 @@ footer p{margin:0 0 10px; max-width:70ch}
 footer b{color:var(--ink-2); font-weight:600}
 
 @media (max-width:720px){
+  .earn-grid{grid-template-columns:1fr}
   .next{grid-template-columns:1fr}
   .next-side{border-left:0; border-top:1px solid var(--rule); align-items:flex-start; text-align:left; flex-direction:row; gap:14px; align-items:baseline; padding:18px 24px}
   .count-label{margin-top:0}
@@ -257,6 +306,9 @@ footer b{color:var(--ink-2); font-weight:600}
 
   <div class="sec-head sec-head--lead"><h2>Today</h2><span class="sec-count" id="todayCount"></span></div>
   <section class="today-panel" id="today"></section>
+
+  <div class="sec-head"><h2>Reporting</h2><span class="sec-count" id="earnCount"></span></div>
+  <section id="earnings"></section>
 
   <section class="next" id="nextUp" aria-label="Next major catalyst"></section>
 
@@ -358,6 +410,54 @@ footer b{color:var(--ink-2); font-weight:600}
     });
   }
 
+  function addDays(dateStr, n){
+    var a = dateStr.split("-").map(Number);
+    var t = new Date(Date.UTC(a[0], a[1]-1, a[2]));
+    t.setUTCDate(t.getUTCDate() + n);
+    return t.toISOString().slice(0,10);
+  }
+  function reportsOn(dateStr){
+    return (DATA.earnings || []).filter(function(e){ return e.d === dateStr; })
+      .sort(function(a,b){
+        if(a.when !== b.when) return a.when === "bmo" ? -1 : 1;
+        if(a.impact !== b.impact) return a.impact === "high" ? -1 : 1;
+        return a.ticker < b.ticker ? -1 : 1;
+      });
+  }
+  function whenLabel(w){ return w === "bmo" ? "Before the open" : "After the close"; }
+
+  /* One run-sheet row per reporting slot, so the calendar keeps the names. */
+  function earningsAsEvents(){
+    var groups = {}, order = [];
+    (DATA.earnings || []).forEach(function(e){
+      var k = e.d + "|" + e.when;
+      if(!groups[k]){ groups[k] = []; order.push(k); }
+      groups[k].push(e);
+    });
+    return order.map(function(k){
+      var g = groups[k].slice().sort(function(a,b){
+        return a.impact === b.impact ? 0 : (a.impact === "high" ? -1 : 1);
+      });
+      var top = g[0], names;
+      if(g.length === 1){
+        names = g[0].name + " (" + g[0].ticker + ") reports";
+      } else {
+        var t = g.map(function(x){ return x.ticker; });
+        names = t.slice(0, -1).join(", ") + " and " + t[t.length-1] + " report";
+      }
+      return {
+        d: top.d,
+        t: top.when === "bmo" ? "before open" : "after close",
+        cat: "earnings",
+        impact: g.some(function(x){ return x.impact === "high"; }) ? "high" : "medium",
+        status: g.every(function(x){ return x.status === "confirmed"; }) ? "confirmed" : "expected",
+        title: names,
+        why: top.note,
+        watch: top.watch
+      };
+    });
+  }
+
   /* ---- market session ---- */
   function marketStatus(now){
     var hol = null;
@@ -405,7 +505,7 @@ footer b{color:var(--ink-2); font-weight:600}
 
   function render(){
     var now = nowParts();
-    var events = (DATA.events || []).slice().sort(function(a,b){
+    var events = (DATA.events || []).concat(earningsAsEvents()).sort(function(a,b){
       return a.d === b.d ? sortKey(a.t) - sortKey(b.t) : (a.d < b.d ? -1 : 1);
     });
 
@@ -461,8 +561,9 @@ footer b{color:var(--ink-2); font-weight:600}
     }
 
     /* today */
-    var todays = events.filter(function(e){ return e.d === now.date; });
+    var todays = events.filter(function(e){ return e.d === now.date && e.cat !== "earnings"; });
     var highToday = todays.filter(function(e){ return e.impact === "high"; }).length;
+    var highEarnToday = reportsOn(now.date).filter(function(e){ return e.impact === "high"; }).length;
     var medToday  = todays.length - highToday;
 
     var alert = "";
@@ -479,9 +580,14 @@ footer b{color:var(--ink-2); font-weight:600}
       : '<p class="today-empty">Nothing scheduled. Barring news, expect a quiet session driven by positioning rather than data.</p>';
     document.getElementById("todayCount").textContent =
       todays.length ? todays.length + (todays.length === 1 ? " event" : " events") : "clear";
-    document.getElementById("tapeToday").textContent = highToday
-      ? highToday + (highToday === 1 ? " high-impact event today" : " high-impact events today")
-      : (todays.length ? todays.length + (todays.length === 1 ? " event today" : " events today") : "");
+    var highAll = highToday + highEarnToday;
+    var allToday = todays.length + reportsOn(now.date).length;
+    document.getElementById("tapeToday").textContent = highAll
+      ? highAll + (highAll === 1 ? " high-impact event today" : " high-impact events today")
+      : (allToday ? allToday + (allToday === 1 ? " event today" : " events today") : "");
+
+    /* reporting today and tomorrow */
+    renderEarnings(now);
 
     /* run sheet */
     var horizonEnd = state.horizon === 0 ? "9999-99-99" : (function(){
@@ -519,6 +625,82 @@ footer b{color:var(--ink-2); font-weight:600}
 
     document.getElementById("sheetCount").textContent =
       shown.length + (shown.length === 1 ? " event" : " events");
+  }
+
+  function earnRow(e, done){
+    return '<div class="earn-row' + (e.impact === "high" ? " is-high" : "") + '">' +
+        '<div class="earn-id">' +
+          '<span class="ticker">' + esc(e.ticker) + '</span>' +
+          '<span class="earn-name">' + esc(e.name) + '</span>' +
+          '<span class="earn-when">' + (done ? "Reported · " : "") +
+            (e.impact === "high" ? "High impact" : "Medium") + '</span>' +
+        '</div>' +
+        '<p class="earn-note">' + esc(e.note) + '</p>' +
+        '<p class="earn-watch"><b>Watch</b>' + esc(e.watch) + '</p>' +
+      '</div>';
+  }
+
+  function earnColumn(label, dateStr, now){
+    var list = reportsOn(dateStr), p = parts(dateStr);
+    var head = '<div class="earn-head">' +
+        '<span class="lbl">' + label + '</span>' +
+        '<span class="dt">' + DOW[p.dow] + " " + p.d + " " + MON[p.m-1] + '</span>' +
+        '<span class="n">' + (list.length || "none") + '</span>' +
+      '</div>';
+    var body = list.length
+      ? (function(){
+          var out = "", slot = null;
+          list.forEach(function(e){
+            if(e.when !== slot){
+              slot = e.when;
+              out += '<div class="earn-row" style="padding-bottom:0;border-left:0">' +
+                '<span class="earn-when" style="margin:0">' + whenLabel(slot) + '</span></div>';
+            }
+            var done = dateStr === now.date &&
+              now.minutes >= (e.when === "bmo" ? 9*60 + 30 : 16*60 + 30);
+            out += earnRow(e, done);
+          });
+          return out;
+        })()
+      : '<p class="earn-empty">No reports scheduled.</p>';
+    return '<div class="earn-col">' + head + body + '</div>';
+  }
+
+  function renderEarnings(now){
+    var tomorrow = addDays(now.date, 1);
+    var todayList = reportsOn(now.date), tomorrowList = reportsOn(tomorrow);
+    var el = document.getElementById("earnings");
+
+    if(todayList.length || tomorrowList.length){
+      el.innerHTML = '<div class="earn-grid">' +
+        earnColumn("Today", now.date, now) +
+        earnColumn("Tomorrow", tomorrow, now) +
+      '</div>';
+      document.getElementById("earnCount").textContent =
+        (todayList.length + tomorrowList.length) + " reporting";
+      return;
+    }
+
+    /* Out of season, point at the next reporting day rather than showing nothing. */
+    var future = (DATA.earnings || []).filter(function(e){ return e.d > tomorrow; })
+      .sort(function(a,b){ return a.d < b.d ? -1 : 1; });
+    if(!future.length){
+      el.innerHTML = '<div class="earn-none"><p class="lead">No earnings dates on the calendar.</p></div>';
+      document.getElementById("earnCount").textContent = "none";
+      return;
+    }
+    var nextDay = future[0].d, roster = reportsOn(nextDay);
+    var np = parts(nextDay), n = daysBetween(now.date, nextDay);
+    el.innerHTML = '<div class="earn-none">' +
+      '<p class="lead">Nothing reports today or tomorrow. Next up is ' +
+        DOW[np.dow] + " " + np.d + " " + MON[np.m-1] + ', ' + relative(n).toLowerCase() + '.</p>' +
+      '<div class="roster">' + roster.map(function(e){
+        return '<span class="who"><span class="ticker">' + esc(e.ticker) +
+          '</span><span class="earn-name">' + esc(e.name) + '</span></span>';
+      }).join("") + '<span class="when">' + whenLabel(roster[0].when) + '</span></div>' +
+    '</div>';
+    document.getElementById("earnCount").textContent =
+      "next " + np.d + " " + MON[np.m-1];
   }
 
   /* ---- toolbar ---- */

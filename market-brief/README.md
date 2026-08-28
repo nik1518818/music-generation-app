@@ -11,7 +11,7 @@ Open it in the morning, scan the top three blocks, decide.
 | File | What it is |
 | --- | --- |
 | `index.html` | The page. All markup, CSS and logic. |
-| `data.js` | The calendar. **This is the only file you edit to keep it current.** |
+| `data.js` | The calendar and the earnings roster. **This is the only file you edit to keep it current.** |
 | `build.mjs` | Bundles the two into one self-contained file. |
 
 ## Running it
@@ -41,7 +41,13 @@ time, so it stays correct wherever you open it:
   time has passed keeps its prominence and is badged "already out" — the
   market is still trading the reaction — but stops counting as the next
   catalyst.
+- **Reporting** — who announces earnings today and tomorrow, split into before
+  the open and after the close, with the impact level and what to watch on each
+  name. Out of season, when nothing reports on either day, it names the next
+  reporting day and who is on it instead of showing an empty block.
 - **Ahead** — the run sheet, filterable by category, impact and horizon.
+  Earnings appear here too, one row per reporting slot, synthesised from the
+  `earnings` array — so there is a single source of truth for who reports when.
 
 ## Keeping the calendar current
 
@@ -65,6 +71,28 @@ Add or correct entries in the `events` array in `data.js`:
   `expected` if it only follows the usual pattern.
 
 Keep the array sorted by date. Nothing else needs to change.
+
+## The earnings roster
+
+Per-company entries live in the `earnings` array:
+
+```js
+{ d: "2026-11-25", when: "amc", ticker: "NVDA", name: "Nvidia",
+  impact: "high", status: "expected",
+  note:  "Why this report matters to the wider market.",
+  watch: "The specific line in the release to look at." }
+```
+
+- `when` — `"bmo"` (before the open) or `"amc"` (after the close). The page
+  marks a name "reported" once its window has safely closed: 9:30am ET for
+  before-the-open names, 4:30pm ET for after-the-close.
+- `impact` — `high` if the name can move the index or its whole sector,
+  `medium` otherwise.
+- Everything else matches the event schema above. Keep this array sorted by
+  date too.
+
+Do not also add an earnings entry to `events` — the page builds those rows
+from this array, and a manual copy would show up twice.
 
 `holidays` drives the market-status line: `close: null` means shut all day,
 otherwise it is minutes from midnight ET (a 1:00 pm close is `780`).
