@@ -152,6 +152,16 @@ h1{
   text-transform:uppercase; color:var(--ink-3); margin-left:4px;
 }
 
+.day-events--earn{padding:14px 0 18px}
+.day-events--earn .earn-row{padding:13px 16px 14px 14px; border-top:0}
+.day-events--earn .earn-row + .earn-row{border-top:1px solid var(--rule-soft)}
+.slot-head{
+  font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3);
+  padding:10px 16px 6px 17px;
+}
+.day-events--earn .slot-head:first-child{padding-top:0}
+
 /* ---------- section headings ---------- */
 .sec-head{
   display:flex; align-items:baseline; gap:14px; margin:56px 0 4px;
@@ -596,6 +606,11 @@ footer b{color:var(--ink-2); font-weight:600}
       return base.toISOString().slice(0,10);
     })();
 
+    if(state.cat === "earnings"){
+      renderEarningsSheet(now, horizonEnd);
+      return;
+    }
+
     var shown = events.filter(function(e){
       if(e.d <= now.date) return false;
       if(e.d > horizonEnd) return false;
@@ -703,11 +718,56 @@ footer b{color:var(--ink-2); font-weight:600}
       "next " + np.d + " " + MON[np.m-1];
   }
 
+  /* The Earnings filter shows the roster itself, one card per company. */
+  function renderEarningsSheet(now, horizonEnd){
+    var list = (DATA.earnings || []).filter(function(e){
+      if(e.d <= now.date) return false;
+      if(e.d > horizonEnd) return false;
+      if(state.highOnly && e.impact !== "high") return false;
+      return true;
+    }).sort(function(a,b){
+      if(a.d !== b.d) return a.d < b.d ? -1 : 1;
+      if(a.when !== b.when) return a.when === "bmo" ? -1 : 1;
+      if(a.impact !== b.impact) return a.impact === "high" ? -1 : 1;
+      return a.ticker < b.ticker ? -1 : 1;
+    });
+
+    var byDay = [], index = {};
+    list.forEach(function(e){
+      if(!index[e.d]){ index[e.d] = {d:e.d, items:[]}; byDay.push(index[e.d]); }
+      index[e.d].items.push(e);
+    });
+
+    document.getElementById("sheet").innerHTML = byDay.length ? byDay.map(function(g){
+      var gp = parts(g.d), n = daysBetween(now.date, g.d), slot = null, rows = "";
+      g.items.forEach(function(e){
+        if(e.when !== slot){
+          slot = e.when;
+          rows += '<div class="slot-head">' + whenLabel(slot) + '</div>';
+        }
+        rows += earnRow(e, false);
+      });
+      return '<div class="day">' +
+        '<div class="day-rail">' +
+          '<div class="rail-day">' + DOW[gp.dow] + '</div>' +
+          '<div class="rail-date">' + gp.d + '</div>' +
+          '<div class="rail-month">' + MON[gp.m-1] + '</div>' +
+          '<div class="rail-rel">' + relative(n) + '</div>' +
+        '</div>' +
+        '<div class="day-events day-events--earn">' + rows + '</div>' +
+      '</div>';
+    }).join("") : '<p class="empty">No companies report in this window.</p>';
+
+    document.getElementById("sheetCount").textContent =
+      list.length + (list.length === 1 ? " company" : " companies");
+  }
+
   /* ---- toolbar ---- */
   function buildToolbar(){
     var bar = document.getElementById("toolbar");
     var used = {};
     (DATA.events||[]).forEach(function(e){ used[e.cat] = true; });
+    if((DATA.earnings||[]).length) used.earnings = true;   /* lives in its own array */
 
     var html = '<button class="filter" data-kind="cat" data-value="all">All</button>';
     Object.keys(CATS).forEach(function(k){

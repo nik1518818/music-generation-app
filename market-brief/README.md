@@ -48,6 +48,9 @@ time, so it stays correct wherever you open it:
 - **Ahead** — the run sheet, filterable by category, impact and horizon.
   Earnings appear here too, one row per reporting slot, synthesised from the
   `earnings` array — so there is a single source of truth for who reports when.
+  Clicking the **Earnings** filter expands those rows into the full per-company
+  cards, grouped by day and split by reporting window, so the whole season can
+  be read name by name. The horizon and high-impact filters still apply.
 
 ## Keeping the calendar current
 
