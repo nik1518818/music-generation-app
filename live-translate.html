@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Live Chinese → English</title>
+    <link rel="stylesheet" href="/live-translate.css">
+</head>
+<body>
+    <header class="lt-header">
+        <div class="lt-brand">
+            <span class="lt-dot" id="statusDot" aria-hidden="true"></span>
+            <h1>Live Chinese → English</h1>
+        </div>
+
+        <div class="lt-header-controls">
+            <label class="lt-field">
+                <span class="lt-field-label">Speech</span>
+                <select id="dialectSelect" aria-label="Spoken language">
+                    <option value="zh-CN">Mandarin (Mainland)</option>
+                    <option value="zh-TW">Mandarin (Taiwan)</option>
+                    <option value="zh-HK">Cantonese (Hong Kong)</option>
+                    <option value="yue-Hant-HK">Cantonese (Yue)</option>
+                </select>
+            </label>
+            <button id="listenBtn" class="lt-listen" type="button" aria-pressed="false">
+                <span class="lt-listen-icon" aria-hidden="true">🎙️</span>
+                <span id="listenLabel">Start listening</span>
+            </button>
+        </div>
+    </header>
+
+    <p class="lt-status" id="status" role="status" aria-live="polite">Press “Start listening”, then allow microphone access.</p>
+
+    <div class="lt-banner lt-banner-error" id="errorBanner" hidden></div>
+    <div class="lt-banner lt-banner-warn" id="supportBanner" hidden></div>
+
+    <main class="lt-feed" id="feed" aria-live="polite" aria-atomic="false">
+        <div class="lt-empty" id="emptyState">
+            <p class="lt-empty-icon" aria-hidden="true">💬</p>
+            <p><strong>English appears here as your family speaks.</strong></p>
+            <p class="lt-empty-hint">Put the phone or laptop on the table between everyone, hit start, and read along.</p>
+        </div>
+        <div class="lt-live" id="liveLine" hidden>
+            <p class="lt-live-en" id="liveEnglish"></p>
+            <p class="lt-live-zh" id="liveChinese"></p>
+        </div>
+    </main>
+
+    <footer class="lt-toolbar">
+        <button type="button" id="chineseToggle" class="lt-tool" aria-pressed="true">中 Show Chinese</button>
+        <button type="button" id="scrollToggle" class="lt-tool" aria-pressed="true">⬇ Auto-scroll</button>
+        <span class="lt-tool-group">
+            <button type="button" id="fontDown" class="lt-tool" aria-label="Smaller text">A−</button>
+            <button type="button" id="fontUp" class="lt-tool" aria-label="Bigger text">A+</button>
+        </span>
+        <span class="lt-spacer"></span>
+        <button type="button" id="copyBtn" class="lt-tool">Copy</button>
+        <button type="button" id="saveBtn" class="lt-tool">Save .txt</button>
+        <button type="button" id="clearBtn" class="lt-tool lt-tool-danger">Clear</button>
+    </footer>
+
+    <script type="module" src="/live-translate.js"></script>
+</body>
+</html>
