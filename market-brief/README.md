@@ -52,6 +52,26 @@ time, so it stays correct wherever you open it:
   cards, grouped by day and split by reporting window, so the whole season can
   be read name by name. The horizon and high-impact filters still apply.
 
+## Read-through (asking Claude from the page)
+
+Every event and earnings card carries a **Read-through** button, which asks
+Claude to explain the event and streams the answer into the card. The card can
+also take the actual print pasted into it ("Core PCE 0.2% m/m") and interpret
+that instead.
+
+This uses the `sample` runtime capability, declared at publish time as
+`capabilities: {sample: {}}`. Two things follow from how it works:
+
+- **Claude cannot browse from inside the page.** It has no web access, no live
+  prices and no memory between calls. It cannot tell you what a number came in
+  at. The prompt forbids it from guessing one, and the panel says so plainly.
+  That is why the paste box exists.
+- **The viewer pays for the call** and is asked to consent the first time.
+
+The page is fully functional without it: if the capability is missing, denied,
+or the page is opened as a plain file, `claude.use("sample")` resolves null and
+the buttons are simply not rendered.
+
 ## Keeping the calendar current
 
 Add or correct entries in the `events` array in `data.js`:

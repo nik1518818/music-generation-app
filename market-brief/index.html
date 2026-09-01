@@ -162,6 +162,40 @@ h1{
 }
 .day-events--earn .slot-head:first-child{padding-top:0}
 
+/* ---------- read-through panel ---------- */
+.explain-wrap{margin-top:10px}
+.explain-btn{
+  font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600;
+  letter-spacing:.11em; text-transform:uppercase;
+  padding:5px 10px; border:1px solid var(--rule); border-radius:2px;
+  background:transparent; color:var(--ink-2); cursor:pointer;
+  transition:background .12s,color .12s,border-color .12s;
+}
+.explain-btn:hover{border-color:var(--ink-3); color:var(--ink)}
+.explain-btn:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.explain-btn[aria-expanded="true"]{background:var(--ink); border-color:var(--ink); color:var(--ground)}
+.explain{
+  margin-top:12px; padding:14px 16px; border-left:2px solid var(--cool);
+  background:var(--surface-2); border-radius:0 2px 2px 0; max-width:66ch;
+}
+.explain-body{
+  font-family:Newsreader,Georgia,serif; font-size:1rem; line-height:1.6;
+  color:var(--ink-2); margin:0; white-space:pre-wrap;
+}
+.explain-body em{color:var(--ink-3)}
+.explain-err{font-size:.85rem; color:var(--ink-3); margin:0}
+.explain-ask{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; padding-top:12px; border-top:1px solid var(--rule)}
+.explain-ask input{
+  flex:1 1 240px; min-width:0; font-family:inherit; font-size:.88rem;
+  padding:7px 10px; border:1px solid var(--rule); border-radius:2px;
+  background:var(--surface); color:var(--ink);
+}
+.explain-ask input:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+.explain-foot{
+  font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.06em;
+  color:var(--ink-3); margin:12px 0 0;
+}
+
 /* ---------- section headings ---------- */
 .sec-head{
   display:flex; align-items:baseline; gap:14px; margin:56px 0 4px;
@@ -493,6 +527,42 @@ footer b{color:var(--ink-2); font-weight:600}
   /* ---- state ---- */
   var state = {cat:"all", highOnly:false, horizon:30};
 
+  /* Claude, asked from the page. Resolves later; stays null when unavailable. */
+  var sampleApi = null, sampleReady = false, streaming = 0;
+  var brief = {};                    /* key -> {open, text, err, loading} */
+
+  function keyOf(o){
+    return (o.d + "|" + (o.ticker || o.title)).replace(/[^A-Za-z0-9|:.-]/g, "_");
+  }
+  function briefFor(k){
+    if(!brief[k]) brief[k] = {open:false, text:"", err:"", loading:false};
+    return brief[k];
+  }
+
+  /* Panel markup is rebuilt from `brief`, so a re-render never loses it. */
+  function explainBlock(k){
+    if(!sampleReady || !sampleApi) return "";
+    var b = briefFor(k);
+    var inner = "";
+    if(b.open){
+      var body = (b.loading && !b.text) ? "<em>Reading\u2026</em>" : esc(b.text);
+      inner = '<div class="explain" data-panel="' + k + '">' +
+          (b.err ? '<p class="explain-err">' + esc(b.err) + '</p>'
+                 : '<p class="explain-body" data-body="' + k + '">' + body + '</p>') +
+          '<div class="explain-ask">' +
+            '<input type="text" data-print="' + k + '" value="' + esc(b.print || "") + '" placeholder="Paste the actual print or headline, if it is out">' +
+            '<button class="explain-btn" data-explain="' + k + '" data-mode="print">Read it</button>' +
+          '</div>' +
+          '<p class="explain-foot">Claude cannot browse \u2014 it reads what you paste, and will not guess a figure it has not been given.</p>' +
+        '</div>';
+    }
+    return '<div class="explain-wrap">' +
+        '<button class="explain-btn" data-explain="' + k + '" aria-expanded="' + (b.open ? "true" : "false") + '">' +
+          (b.open ? "Hide read-through" : "Read-through") +
+        '</button>' + inner +
+      '</div>';
+  }
+
   function eventCard(ev, done, lead){
     var chips = '<span class="chip chip--cat">' + esc(CATS[ev.cat] || ev.cat) + '</span>';
     chips += ev.impact === "high"
@@ -509,11 +579,16 @@ footer b{color:var(--ink-2); font-weight:600}
           '<div class="chips">' + chips + '</div>' +
           '<p class="why">' + esc(ev.why) + '</p>' +
           '<p class="watch"><b>Watch</b>' + esc(ev.watch) + '</p>' +
+          explainBlock(keyOf(ev)) +
         '</div>' +
       '</article>';
   }
 
   function render(){
+    document.querySelectorAll("[data-print]").forEach(function(i){
+      var kk = i.getAttribute("data-print");
+      if(brief[kk]) brief[kk].print = i.value;
+    });
     var now = nowParts();
     var events = (DATA.events || []).concat(earningsAsEvents()).sort(function(a,b){
       return a.d === b.d ? sortKey(a.t) - sortKey(b.t) : (a.d < b.d ? -1 : 1);
@@ -652,6 +727,7 @@ footer b{color:var(--ink-2); font-weight:600}
         '</div>' +
         '<p class="earn-note">' + esc(e.note) + '</p>' +
         '<p class="earn-watch"><b>Watch</b>' + esc(e.watch) + '</p>' +
+        explainBlock(keyOf(e)) +
       '</div>';
   }
 
@@ -762,6 +838,88 @@ footer b{color:var(--ink-2); font-weight:600}
       list.length + (list.length === 1 ? " company" : " companies");
   }
 
+  /* ---- read-through ---- */
+  function findItem(k){
+    var pools = [(DATA.earnings || []), (DATA.events || []), earningsAsEvents()];
+    for(var i = 0; i < pools.length; i++){
+      for(var j = 0; j < pools[i].length; j++){
+        if(keyOf(pools[i][j]) === k) return pools[i][j];
+      }
+    }
+    return null;
+  }
+
+  function buildPrompt(item, printText, now){
+    var isEarn = !!item.ticker, lines = [];
+    if(isEarn){
+      lines.push("EVENT: " + item.name + " (" + item.ticker + ") quarterly results");
+      lines.push("WHEN: " + item.d + ", " + whenLabel(item.when).toLowerCase() + " (US Eastern)");
+    } else {
+      lines.push("EVENT: " + item.title);
+      lines.push("WHEN: " + item.d + (item.t ? ", " + (clock(item.t) || item.t) + " US Eastern" : ""));
+      lines.push("CATEGORY: " + (CATS[item.cat] || item.cat));
+    }
+    lines.push("IMPACT RATING: " + item.impact);
+    lines.push("WHY IT MATTERS (the page's own note): " + (item.why || item.note));
+    lines.push("WHAT TO WATCH (the page's own note): " + item.watch);
+    lines.push("TODAY IS: " + now.date);
+    var n = daysBetween(now.date, item.d);
+    lines.push("TIMING: " + (n > 0 ? "still ahead, in " + n + " day(s)"
+                            : n === 0 ? "today" : "already happened, " + (-n) + " day(s) ago"));
+    if(printText) lines.push("ACTUAL RESULT, pasted by the trader: " + printText);
+
+    return lines.join("\n") + "\n\n" +
+      "You are writing a short read-through for an experienced retail trader deciding whether to trade around this event.\n\n" +
+      "HARD RULES\n" +
+      "- You cannot browse and have no live market or price data. Do NOT state, estimate or imply the actual released figure, the consensus estimate, any price level or any market reaction, unless it appears under ACTUAL RESULT above.\n" +
+      "- If there is no ACTUAL RESULT above and the event has already happened, say so in one short sentence and name the single figure worth looking up. Do not speculate about what it was.\n" +
+      "- Never invent analyst estimates or percentage moves.\n" +
+      "- Plain prose. No headings, no bullet points, no preamble, no sign-off.\n\n" +
+      (printText
+        ? "Write 150-200 words. Lead with what that pasted result actually means \u2014 whether it is hot, in line or soft, and why that matters. Then give the read-through to the rate path or the relevant sector, and say what it changes for someone positioning over the next week."
+        : "Write 150-200 words covering: what this actually measures in concrete terms; what a hot, an in-line and a soft outcome would each imply for equities and rates; and the read-through to the Fed path or the relevant sector.");
+  }
+
+  function runBrief(k, printText){
+    var b = briefFor(k), item = findItem(k);
+    if(!item || !sampleApi) return;
+    b.loading = true; b.err = ""; b.text = "";
+    streaming++;
+    render();
+    sampleApi(buildPrompt(item, printText, nowParts()), {
+      modelTier: "default",
+      onText: function(u){
+        b.text = u.text;
+        var node = document.querySelector('[data-body="' + k + '"]');
+        if(node) node.textContent = u.text;
+      }
+    }).then(function(res){
+      b.text = (res && res.text) || b.text;
+    }).catch(function(err){
+      var code = err && err.code;
+      if(err && err.text) b.text = err.text;
+      if(code === "not_granted"){ sampleApi = null; }
+      else if(code === "rate_limited"){ b.err = "Rate limited \u2014 give it a minute."; }
+      else if(code !== "cancelled"){ b.err = "Could not get a read-through. Try again."; }
+    }).then(function(){
+      b.loading = false; streaming--; render();
+    });
+  }
+
+  document.addEventListener("click", function(evt){
+    var btn = evt.target.closest ? evt.target.closest("[data-explain]") : null;
+    if(!btn) return;
+    var k = btn.getAttribute("data-explain"), b = briefFor(k);
+    if(btn.getAttribute("data-mode") === "print"){
+      var input = document.querySelector('[data-print="' + k + '"]');
+      runBrief(k, input ? input.value.trim() : "");
+      return;
+    }
+    if(b.open){ b.open = false; render(); return; }
+    b.open = true;
+    if(b.text || b.loading) render(); else runBrief(k, b.print || "");
+  });
+
   /* ---- toolbar ---- */
   function buildToolbar(){
     var bar = document.getElementById("toolbar");
@@ -807,7 +965,14 @@ footer b{color:var(--ink-2); font-weight:600}
 
   buildToolbar();
   render();
-  setInterval(render, 60000);   /* keeps the clock, countdown and "today" honest */
+  setInterval(function(){ if(streaming === 0) render(); }, 60000);
+
+  /* Claude resolves after first paint; the page is complete without it. */
+  if(window.claude && typeof window.claude.use === "function"){
+    window.claude.use("sample").then(function(api){
+      sampleApi = api || null; sampleReady = true; render();
+    }, function(){ sampleReady = true; render(); });
+  }
 })();
 </script>
 </body>
